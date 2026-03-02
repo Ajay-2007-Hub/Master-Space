@@ -1,0 +1,140 @@
+{
+  "name": "Multi-Role AI Assistant with Context-Adaptive Response System",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "adaptive-ai-assistant",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "42c8269d-484b-4bbe-855d-b0f14e36d8a8",
+      "name": "Receive Request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        256,
+        304
+      ],
+      "webhookId": "c6165918-6f91-47c5-b5f4-a3131034201f"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"response\": $json.output, \"status\": \"success\" } }}",
+        "options": {}
+      },
+      "id": "58c9752a-26d5-45c0-961f-094fd8315608",
+      "name": "Send Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        832,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an advanced AI Assistant integrated inside an automation workflow.\n\nYou can act as:\n1) Study Tutor\n2) Research Analyst\n3) WhatsApp Assistant\n4) Coding Expert\n5) Project Consultant\n\nYour behavior must automatically adapt based on user input:\n\n-----------------------------\nIF the message looks academic:\n-----------------------------\n- Explain concepts clearly and simply.\n- Use headings and bullet points.\n- Provide examples.\n- If exam-style is requested, format as 5-mark / 10-mark / 15-mark answers.\n- If needed, include step-by-step explanation.\n- Keep it structured and easy for college students.\n\n-----------------------------\nIF the message looks like research:\n-----------------------------\n- Provide detailed, structured answers.\n- Include analysis, comparisons, advantages, disadvantages.\n- Add real-world applications.\n- Keep professional tone.\n- Avoid assumptions or hallucinations.\n\n-----------------------------\nIF the message is for WhatsApp:\n-----------------------------\n- Keep response short (2–5 lines).\n- Friendly and human-like.\n- No long paragraphs.\n- Polite and clear.\n- Never mention being an AI model.\n\n-----------------------------\nIF coding is requested:\n-----------------------------\n- Provide clean and simple code.\n- Add short explanation.\n- Avoid unnecessary complexity.\n- Use best practices.\n\n-----------------------------\nGENERAL RULES:\n-----------------------------\n- Always prioritize clarity.\n- Do not provide false information.\n- If unsure, say information may vary.\n- Adapt tone automatically.\n- Be helpful, structured, and accurate.\n\n---\n\nUser Query: {{ $json.body.message || $json.body.query || $json.body.text || $json.query.message }}"
+      },
+      "id": "32cd2be8-b218-4ac6-8383-109fea575da9",
+      "name": "Adaptive AI Assistant",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        480,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.7,
+          "timeout": 60000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        416,
+        512
+      ],
+      "id": "6bd964e5-9942-40b5-bed7-342b4c8c2c12",
+      "name": "OpenAI Chat Model",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "retryOnFail": true,
+      "notesInFlow": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "MbbNHL13riBvL5DU",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Receive Request": {
+      "main": [
+        [
+          {
+            "node": "Adaptive AI Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Response": {
+      "main": [
+        []
+      ]
+    },
+    "Adaptive AI Assistant": {
+      "main": [
+        [
+          {
+            "node": "Send Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Adaptive AI Assistant",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1
+  },
+  "versionId": "b8d14567-b884-4ba1-8955-5db147f54fa2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4de56342a72db2b23ab545ec0b7abbcc34e3dcce0e11d8d26c1a02d118e69e48"
+  },
+  "id": "BTUYr5JTNvdWe64X",
+  "tags": []
+}
